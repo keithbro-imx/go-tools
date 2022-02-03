@@ -66,7 +66,7 @@ func (b *BasicBlock) SigmaForRecursive(v Value, pred *BasicBlock) *Sigma {
 			// no more sigmas
 			return nil
 		}
-		if sigma.From == pred && unsigma(sigma.X) == v {
+		if sigma.From == pred && sigma.X == v || unsigma(sigma.X) == v {
 			return sigma
 		}
 	}
@@ -117,6 +117,7 @@ func (b *BasicBlock) succIndex(c *BasicBlock) int {
 
 // hasPhi returns true if b.Instrs contains φ-nodes.
 func (b *BasicBlock) hasPhi() bool {
+	// XXX have we broken this when we added sigmas?
 	_, ok := b.Instrs[0].(*Phi)
 	return ok
 }
@@ -127,8 +128,18 @@ func (b *BasicBlock) Phis() []Instruction {
 
 // phis returns the prefix of b.Instrs containing all the block's φ-nodes.
 func (b *BasicBlock) phis() []Instruction {
+	// XXX have we broken this when we added sigmas?
 	for i, instr := range b.Instrs {
 		if _, ok := instr.(*Phi); !ok {
+			return b.Instrs[:i]
+		}
+	}
+	return nil // unreachable in well-formed blocks
+}
+
+func (b *BasicBlock) Sigmas() []Instruction {
+	for i, instr := range b.Instrs {
+		if _, ok := instr.(*Sigma); !ok {
 			return b.Instrs[:i]
 		}
 	}
