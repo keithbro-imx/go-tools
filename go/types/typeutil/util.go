@@ -84,6 +84,8 @@ func IsObject(obj types.Object, name string) bool {
 func IsType(T types.Type, name string) bool { return types.TypeString(T, nil) == name }
 
 func IsPointerLike(T types.Type) bool {
+	// XXX handle type parameters
+
 	switch T := T.Underlying().(type) {
 	case *types.Interface, *types.Chan, *types.Map, *types.Signature, *types.Pointer, *types.Slice:
 		return true
