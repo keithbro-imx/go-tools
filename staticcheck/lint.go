@@ -3770,10 +3770,11 @@ func CheckToLowerToUpperComparison(pass *analysis.Pass) (interface{}, error) {
 }
 
 func CheckUnreachableTypeCases(pass *analysis.Pass) (interface{}, error) {
-	// XXX handle type parameters.
-
 	// Check if T subsumes V in a type switch. T subsumes V if T is an interface and T's method set is a subset of V's method set.
 	subsumes := func(T, V types.Type) bool {
+		if typeparams.IsTypeParam(T) {
+			return false
+		}
 		tIface, ok := T.Underlying().(*types.Interface)
 		if !ok {
 			return false
