@@ -4314,7 +4314,7 @@ func findSliceLenChecks(pass *analysis.Pass) {
 			if !ok {
 				continue
 			}
-			if _, ok := param.Type().Underlying().(*types.Slice); !ok {
+			if !typeutil.All(param.Type(), typeutil.IsSlice) {
 				continue
 			}
 
@@ -4354,9 +4354,7 @@ func findIndirectSliceLenChecks(pass *analysis.Pass) {
 					continue
 				}
 
-				if callee.Pkg == fn.Pkg {
-					// TODO(dh): are we missing interesting wrappers
-					// because wrappers don't have Pkg set?
+				if callee.Pkg == fn.Pkg || callee.Pkg == nil {
 					doFunction(callee)
 				}
 
@@ -4368,12 +4366,12 @@ func findIndirectSliceLenChecks(pass *analysis.Pass) {
 						argi--
 					}
 
-					// TODO(dh): support parameters that have flown through sigmas and phis
+					// TODO(dh): support parameters that have flown through length-preserving instructions
 					param, ok := arg.(*ir.Parameter)
 					if !ok {
 						continue
 					}
-					if _, ok := param.Type().Underlying().(*types.Slice); !ok {
+					if !typeutil.All(param.Type(), typeutil.IsSlice) {
 						continue
 					}
 
