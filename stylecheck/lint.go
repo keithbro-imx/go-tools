@@ -788,6 +788,7 @@ func CheckInvisibleCharacters(pass *analysis.Pass) (interface{}, error) {
 }
 
 func CheckExportedFunctionDocs(pass *analysis.Pass) (interface{}, error) {
+	println("cefd")
 	fn := func(node ast.Node) {
 		if code.IsInTest(pass, node) {
 			return
